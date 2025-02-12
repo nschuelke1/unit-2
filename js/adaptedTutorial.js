@@ -1,5 +1,4 @@
-
-//this defines a geojson feature with the given information
+// Define a GeoJSON feature
 var geojsonFeature = {
     "type": "Feature",
     "properties": {
@@ -12,10 +11,11 @@ var geojsonFeature = {
         "coordinates": [-104.99404, 39.75621]
     }
 };
-// adds the feature to the map
-L.geoJSON(geojsonFeature).addTo(map);
 
-// arrays of linestrings with coordinates
+// Add the feature to the map
+L.geoJSON(geojsonFeature).addTo(mymap);
+
+// Arrays of LineStrings with coordinates
 var myLines = [{
     "type": "LineString",
     "coordinates": [[-100, 40], [-105, 45], [-110, 55]]
@@ -24,11 +24,10 @@ var myLines = [{
     "coordinates": [[-105, 40], [-110, 45], [-115, 55]]
 }];
 
-
-var myLayer = L.geoJSON().addTo(map);
+var myLayer = L.geoJSON().addTo(mymap);
 myLayer.addData(geojsonFeature);
 
-// defines a style for the linestrings
+// Define a style for the LineStrings
 var myStyle = {
     "color": "#ff7800",
     "weight": 5,
@@ -37,9 +36,9 @@ var myStyle = {
 
 L.geoJSON(myLines, {
     style: myStyle
-}).addTo(map);
+}).addTo(mymap);
 
-// defines states as polygon features with styles based on political party
+// Define states as polygon features with styles based on political party
 var states = [{
     "type": "Feature",
     "properties": {"party": "Republican"},
@@ -47,8 +46,8 @@ var states = [{
         "type": "Polygon",
         "coordinates": [[
             [-104.05, 48.99],
-            [-97.22,  48.98],
-            [-96.58,  45.94],
+            [-97.22, 48.98],
+            [-96.58, 45.94],
             [-104.03, 45.94],
             [-104.05, 48.99]
         ]]
@@ -75,9 +74,9 @@ L.geoJSON(states, {
             case 'Democrat':   return {color: "#0000ff"};
         }
     }
-}).addTo(map);
+}).addTo(mymap);
 
-// defines marker options for geojson point features
+// Define marker options for GeoJSON point features
 var geojsonMarkerOptions = {
     radius: 8,
     fillColor: "#ff7800",
@@ -87,38 +86,24 @@ var geojsonMarkerOptions = {
     fillOpacity: 0.8
 };
 
-L.geoJSON(someGeojsonFeature, {
+L.geoJSON(geojsonFeature, {
     pointToLayer: function (feature, latlng) {
         return L.circleMarker(latlng, geojsonMarkerOptions);
     }
-}).addTo(map);
+}).addTo(mymap);
 
-// creates a function to add popups to features
+// Create a function to add popups to features
 function onEachFeature(feature, layer) {
-    // does this feature have a property named popupContent?
     if (feature.properties && feature.properties.popupContent) {
         layer.bindPopup(feature.properties.popupContent);
     }
 }
 
-var geojsonFeature = {
-    "type": "Feature",
-    "properties": {
-        "name": "Coors Field",
-        "amenity": "Baseball Stadium",
-        "popupContent": "This is where the Rockies play!"
-    },
-    "geometry": {
-        "type": "Point",
-        "coordinates": [-104.99404, 39.75621]
-    }
-};
-
 L.geoJSON(geojsonFeature, {
     onEachFeature: onEachFeature
-}).addTo(map);
+}).addTo(mymap);
 
-// this filters features from the map
+// Filter features from the map
 var someFeatures = [{
     "type": "Feature",
     "properties": {
@@ -145,14 +130,14 @@ L.geoJSON(someFeatures, {
     filter: function(feature, layer) {
         return feature.properties.show_on_map;
     }
-}).addTo(map);
+}).addTo(mymap);
 
-  // using fetch to retrieve MegaCities info
-  fetch("data/MegaCities.geojson")
-  .then(function(response){
-      return response.json();
-  })
-  .then(function(json){
-      //create a Leaflet GeoJSON layer and add it to the map
-      L.geoJson(json).addTo(map);
-  })
+// Using fetch to retrieve MegaCities info
+fetch("data/MegaCities.geojson")
+    .then(function(response) {
+        return response.json();
+    })
+    .then(function(json) {
+        // Create a Leaflet GeoJSON layer and add it to the map
+        L.geoJSON(json).addTo(mymap);
+    });
