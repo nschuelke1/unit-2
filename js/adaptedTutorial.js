@@ -12,9 +12,50 @@ var geojsonFeature = {
     }
 };
 
+// Create a function to attach popups to each mapped feature
+function onEachFeature(feature, layer) {
+    // Create HTML string with all properties
+    var popupContent = "";
+    if (feature.properties) {
+        // Loop to add feature property names and values to HTML string
+        for (var property in feature.properties){
+            popupContent += "<p>" + property + ": " + feature.properties[property] + "</p>";
+        }
+        layer.bindPopup(popupContent);
+    }
+}
+
+// Define marker options for GeoJSON point features
+var geojsonMarkerOptions = {
+    radius: 8,
+    fillColor: "#ff7800",
+    color: "#000",
+    weight: 1,
+    opacity: 1,
+    fillOpacity: 0.8
+};
+
+// Function to retrieve the data and place it on the map
+function getData(map){
+    // Load the data
+    fetch("data/MegaCities.geojson")
+        .then(function(response){
+            return response.json();
+        })
+        .then(function(json){
+            // Create a Leaflet GeoJSON layer and add it to the map
+            L.geoJSON(json, {
+                pointToLayer: function (feature, latlng) {
+                    return L.circleMarker(latlng, geojsonMarkerOptions);
+                },
+                onEachFeature: onEachFeature
+            }).addTo(map);
+        });
+}
+
 // Function to instantiate the Leaflet map
 function createMap() {
-    // Create the map with initial settings from main.js
+    // Create the map
     var map = L.map('mapid').setView([51.505, -0.09], 13);
 
     // Add OSM base tilelayer
@@ -86,30 +127,11 @@ function createMap() {
         }
     }).addTo(map);
 
-    // Define marker options for GeoJSON point features
-    var geojsonMarkerOptions = {
-        radius: 8,
-        fillColor: "#ff7800",
-        color: "#000",
-        weight: 1,
-        opacity: 1,
-        fillOpacity: 0.8
-    };
-
+    // Add the `geojsonFeature` to the map with `pointToLayer` and `onEachFeature`
     L.geoJSON(geojsonFeature, {
         pointToLayer: function (feature, latlng) {
             return L.circleMarker(latlng, geojsonMarkerOptions);
-        }
-    }).addTo(map);
-
-    // Create a function to add popups to features
-    function onEachFeature(feature, layer) {
-        if (feature.properties && feature.properties.popupContent) {
-            layer.bindPopup(feature.properties.popupContent);
-        }
-    }
-
-    L.geoJSON(geojsonFeature, {
+        },
         onEachFeature: onEachFeature
     }).addTo(map);
 
@@ -143,16 +165,7 @@ function createMap() {
     }).addTo(map);
 
     // Load the MegaCities data and add it to the map
-    fetch("data/MegaCities.geojson")
-        .then(function(response) {
-            return response.json();
-        })
-        .then(function(json) {
-            // Create a Leaflet GeoJSON layer and add it to the map
-            L.geoJSON(json, {
-                onEachFeature: onEachFeature
-            }).addTo(map);
-        });
+    getData(map);
 }
 
 // Ensure `createMap` is called once DOM is fully loaded
