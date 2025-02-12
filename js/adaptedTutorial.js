@@ -146,3 +146,13 @@ L.geoJSON(someFeatures, {
         return feature.properties.show_on_map;
     }
 }).addTo(map);
+
+  // using fetch to retrieve MegaCities info
+  fetch("data/MegaCities.geojson")
+  .then(function(response){
+      return response.json();
+  })
+  .then(function(json){
+      //create a Leaflet GeoJSON layer and add it to the map
+      L.geoJson(json).addTo(map);
+  })
