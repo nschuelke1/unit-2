@@ -1,3 +1,5 @@
+
+//this defines a geojson feature with the given information
 var geojsonFeature = {
     "type": "Feature",
     "properties": {
@@ -10,9 +12,10 @@ var geojsonFeature = {
         "coordinates": [-104.99404, 39.75621]
     }
 };
-
+// adds the feature to the map
 L.geoJSON(geojsonFeature).addTo(map);
 
+// arrays of linestrings with coordinates
 var myLines = [{
     "type": "LineString",
     "coordinates": [[-100, 40], [-105, 45], [-110, 55]]
@@ -20,18 +23,12 @@ var myLines = [{
     "type": "LineString",
     "coordinates": [[-105, 40], [-110, 45], [-115, 55]]
 }];
+
 
 var myLayer = L.geoJSON().addTo(map);
 myLayer.addData(geojsonFeature);
 
-var myLines = [{
-    "type": "LineString",
-    "coordinates": [[-100, 40], [-105, 45], [-110, 55]]
-}, {
-    "type": "LineString",
-    "coordinates": [[-105, 40], [-110, 45], [-115, 55]]
-}];
-
+// defines a style for the linestrings
 var myStyle = {
     "color": "#ff7800",
     "weight": 5,
@@ -42,6 +39,7 @@ L.geoJSON(myLines, {
     style: myStyle
 }).addTo(map);
 
+// defines states as polygon features with styles based on political party
 var states = [{
     "type": "Feature",
     "properties": {"party": "Republican"},
@@ -79,6 +77,7 @@ L.geoJSON(states, {
     }
 }).addTo(map);
 
+// defines marker options for geojson point features
 var geojsonMarkerOptions = {
     radius: 8,
     fillColor: "#ff7800",
@@ -94,6 +93,7 @@ L.geoJSON(someGeojsonFeature, {
     }
 }).addTo(map);
 
+// creates a function to add popups to features
 function onEachFeature(feature, layer) {
     // does this feature have a property named popupContent?
     if (feature.properties && feature.properties.popupContent) {
@@ -118,6 +118,7 @@ L.geoJSON(geojsonFeature, {
     onEachFeature: onEachFeature
 }).addTo(map);
 
+// this filters features from the map
 var someFeatures = [{
     "type": "Feature",
     "properties": {
