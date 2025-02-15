@@ -16,6 +16,27 @@ function createMap() {
     getData(map, "2013");
 }
 
+// Step 1: Create new sequence controls
+function createSequenceControls() {
+    // Create range input element (slider)
+    var slider = "<input class='range-slider' type='range'></input>";
+    document.querySelector("#panel").insertAdjacentHTML('beforeend', slider);
+
+    // Set slider attributes
+    var sliderElement = document.querySelector(".range-slider");
+    sliderElement.max = 6;
+    sliderElement.min = 0;
+    sliderElement.value = 0;
+    sliderElement.step = 1;
+
+    // Add event listener to update the map based on slider input
+    sliderElement.addEventListener('input', function() {
+        var yearIndex = this.value;
+        var year = 2013 + parseInt(yearIndex); // Calculate the corresponding year
+        updateMap(map, year);
+    });
+}
+
 // Calculate the minimum value of the data
 function calculateMinValue(data, attribute) {
     // Create empty array to store all data values
@@ -23,10 +44,12 @@ function calculateMinValue(data, attribute) {
     
     // Loop through each feature
     for (var feature of data.features) {
-        // Get the value for the specified year
-        var value = Number(feature.properties[attribute]);
-        // Add value to array
-        allValues.push(value);
+        // Get the value for the specified year and parse it as a number
+        var value = feature.properties[attribute];
+        // Add value to array if it's a valid number
+        if (!isNaN(value)) {
+            allValues.push(value);
+        }
     }
     
     // Get minimum value of our array
@@ -61,8 +84,13 @@ function createPropSymbols(data, attribute) {
 
     L.geoJSON(data, {
         pointToLayer: function (feature, latlng) {
-            // For each feature, determine its value for the selected attribute
-            var attValue = Number(feature.properties[attribute]);
+            // For each feature, determine its value for the selected attribute and parse it as a number
+            var attValue = feature.properties[attribute];
+
+            // Check if attValue is a valid number
+            if (isNaN(attValue)) {
+                attValue = 0; // Set to a default value if invalid
+            }
 
             // Give each feature's circle marker a radius based on its attribute value
             geojsonMarkerOptions.radius = calcPropRadius(attValue);
@@ -72,6 +100,27 @@ function createPropSymbols(data, attribute) {
         },
         onEachFeature: onEachFeature
     }).addTo(map);
+}
+
+// Step 4: Update the map based on the selected year
+function updateMap(map, year) {
+    var attribute = year.toString();
+
+    // Load the data
+    fetch("data/StatePopChange.geojson")
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(json) {
+            // Clear existing layers
+            map.eachLayer(function(layer) {
+                if (layer instanceof L.GeoJSON) {
+                    map.removeLayer(layer);
+                }
+            });
+            // Call function to create proportional symbols
+            createPropSymbols(json, attribute);
+        });
 }
 
 // Step 2: Import GeoJSON data
@@ -84,6 +133,8 @@ function getData(map, attribute) {
         .then(function(json) {
             // Call function to create proportional symbols
             createPropSymbols(json, attribute);
+            // Call function to create sequence controls
+            createSequenceControls();
         });
 }
 
