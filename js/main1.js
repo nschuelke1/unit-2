@@ -2,6 +2,9 @@
 var map;
 var minValue;
 
+// Define an array of years from 2013 to 2019
+var years = [2013, 2014, 2015, 2016, 2017, 2018, 2019];
+
 // Step 1: Create the map
 function createMap() {
     // Create the map and center it over the United States with zoom level 4
@@ -12,28 +15,9 @@ function createMap() {
         attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
-    // Call getData function for the year 2013
-    getData(map, "2013");
-}
-
-// Create new sequence controls
-function createSequenceControls() {
-    // Create range input element for slider
-    var slider = "<input class='range-slider' type='range'></input>";
-    document.querySelector("#panel").insertAdjacentHTML('beforeend', slider);
-
-    // Set slider attributes
-    var sliderElement = document.querySelector(".range-slider");
-    sliderElement.max = 6;
-    sliderElement.min = 0;
-    sliderElement.value = 0;
-    sliderElement.step = 1;
-
-    // Add event listener to update the map based on slider input
-    sliderElement.addEventListener('input', function() {
-        var yearIndex = this.value;
-        var year = 2013 + parseInt(yearIndex); // Calculate the corresponding year
-        updateMap(map, year);
+    // Call getData function for each year
+    years.forEach(function(year) {
+        getData(map, year.toString());
     });
 }
 
@@ -61,9 +45,9 @@ function calculateMinValue(data, attribute) {
 // Calculate the radius of each proportional symbol
 function calcPropRadius(attValue) {
     // Constant factor adjusts symbol sizes evenly
-    var minRadius = 1;
-    // Flannery Appearance Compensation formula
-    var radius = 7 * Math.pow(attValue / minValue, 0.5715) * minRadius;
+    var minRadius = 10;  // Increase the base size of the markers
+    // Flannery Appearance Compensation formula with a larger scaling factor
+    var radius = 2 * Math.pow(attValue / minValue, 0.5715) * minRadius;
     
     return radius;
 }
@@ -102,28 +86,7 @@ function createPropSymbols(data, attribute) {
     }).addTo(map);
 }
 
-// Step 4: Update the map based on the selected year
-function updateMap(map, year) {
-    var attribute = year.toString();
-
-    // Load the data
-    fetch("data/StatePopChange.geojson")
-        .then(function(response) {
-            return response.json();
-        })
-        .then(function(json) {
-            // Clear existing layers
-            map.eachLayer(function(layer) {
-                if (layer instanceof L.GeoJSON) {
-                    map.removeLayer(layer);
-                }
-            });
-            // Call function to create proportional symbols
-            createPropSymbols(json, attribute);
-        });
-}
-
-// Import GeoJSON data
+// Step 2: Import GeoJSON data
 function getData(map, attribute) {
     // Load the data
     fetch("data/StatePopChange.geojson")
@@ -133,8 +96,6 @@ function getData(map, attribute) {
         .then(function(json) {
             // Call function to create proportional symbols
             createPropSymbols(json, attribute);
-            // Call function to create sequence controls
-            createSequenceControls();
         });
 }
 
