@@ -61,9 +61,9 @@ function calculateMinValue(data, attribute) {
 // Calculate the radius of each proportional symbol
 function calcPropRadius(attValue) {
     // Constant factor adjusts symbol sizes evenly
-    var minRadius = 5;
+    var minRadius = 1;
     // Flannery Appearance Compensation formula
-    var radius = 1.0083 * Math.pow(attValue / minValue, 0.5715) * minRadius;
+    var radius = 7 * Math.pow(attValue / minValue, 0.5715) * minRadius;
     
     return radius;
 }
